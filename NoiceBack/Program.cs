@@ -3,23 +3,31 @@ using PortalNoticiasAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration
+    .GetConnectionString("PortalNoticiasDb");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "No se encontró la cadena de conexión 'PortalNoticiasDb'. " +
+        "Configúrala mediante User Secrets o variables de entorno."
+    );
+}
+
 builder.Services.AddDbContext<PortalNoticiasContext>(options =>
     options.UseMySql(
-        builder.Configuration.GetConnectionString("PortalNoticiasDb"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("PortalNoticiasDb"))
+        connectionString,
+        ServerVersion.AutoDetect(connectionString)
     )
 );
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,8 +38,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
-
 app.UseStaticFiles();
+
+app.MapControllers();
 
 app.Run();
