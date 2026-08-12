@@ -1,6 +1,13 @@
 @NoiceBack_HostAddress = http://localhost:5135
 
-GET {{NoiceBack_HostAddress}}/weatherforecast/
+### Roles
+GET {{NoiceBack_HostAddress}}/api/roles
 Accept: application/json
 
-###
+### Categorias
+GET {{NoiceBack_HostAddress}}/api/categorias
+Accept: application/json
+
+### Tipos de grupo
+GET {{NoiceBack_HostAddress}}/api/grupostipos
+Accept: application/json
