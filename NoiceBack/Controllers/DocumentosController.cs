@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -19,8 +20,6 @@ namespace PortalNoticiasAPI.Controllers
             _env = env;
         }
 
-        // GET: api/documentos/porNoticia/5
-        // Trae todos los documentos adjuntos de una noticia específica
         [HttpGet("porNoticia/{idNoticia}")]
         public async Task<ActionResult<IEnumerable<DocumentoDto>>> GetDocumentosPorNoticia(int idNoticia)
         {
@@ -39,10 +38,8 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(documentos);
         }
 
-        // POST: api/documentos
-        // Recibe el archivo (multipart/form-data) + el idNoticia al que pertenece
-        // POST: api/documentos
         [HttpPost]
+        [Authorize(Roles = "Administrador,Docente")]
         public async Task<ActionResult<DocumentoDto>> SubirDocumento([FromForm] DocumentoUploadDto dto)
         {
             var noticiaExiste = await _context.Noticias.AnyAsync(n => n.IdNoticia == dto.IdNoticia && n.Activo);
@@ -86,8 +83,9 @@ namespace PortalNoticiasAPI.Controllers
                 Activo = documento.Activo
             });
         }
-        // DELETE: api/documentos/5 (borrado lógico)
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarDocumento(int id)
         {
             var documento = await _context.NoticiasDocumentos.FindAsync(id);

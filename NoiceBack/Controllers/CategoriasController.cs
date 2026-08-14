@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -46,6 +47,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<CategoriaDto>> CrearCategoria(CategoriaCreateUpdateDto dto)
         {
             var categoria = new Categoria
@@ -61,6 +63,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarCategoria(int id, CategoriaCreateUpdateDto dto)
         {
             var categoria = await _context.Categorias.FindAsync(id);
@@ -74,6 +77,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarCategoria(int id)
         {
             var categoria = await _context.Categorias.FindAsync(id);

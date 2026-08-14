@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -8,6 +9,7 @@ namespace PortalNoticiasAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Administrador")]
     public class RolesController : ControllerBase
     {
         private readonly PortalNoticiasContext _context;

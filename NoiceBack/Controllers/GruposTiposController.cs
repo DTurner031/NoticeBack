@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -34,6 +35,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<GrupoTipoDto>> CrearGrupoTipo(GrupoTipoCreateUpdateDto dto)
         {
             var tipo = new GrupoTipo { Tipo = dto.Tipo, FechaAlta = DateTime.Now, Activo = true };
@@ -43,6 +45,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarGrupoTipo(int id, GrupoTipoCreateUpdateDto dto)
         {
             var tipo = await _context.GruposTipos.FindAsync(id);
@@ -55,6 +58,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarGrupoTipo(int id)
         {
             var tipo = await _context.GruposTipos.FindAsync(id);

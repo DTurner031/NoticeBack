@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -74,6 +75,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<GrupoDto>> CrearGrupo(GrupoCreateUpdateDto dto)
         {
             var materiaExiste = await _context.Materias.AnyAsync(m => m.IdMateria == dto.IdMateria && m.Activo);
@@ -108,6 +110,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarGrupo(int id, GrupoCreateUpdateDto dto)
         {
             var grupo = await _context.Grupos.FindAsync(id);
@@ -128,6 +131,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarGrupo(int id)
         {
             var grupo = await _context.Grupos.FindAsync(id);
@@ -141,7 +145,6 @@ namespace PortalNoticiasAPI.Controllers
 
         // ---------- Sub-recurso: alumnos inscritos en el grupo ----------
 
-        // GET: api/grupos/5/alumnos
         [HttpGet("{idGrupo}/alumnos")]
         public async Task<ActionResult<IEnumerable<GrupoAlumnoDto>>> GetAlumnosDeGrupo(int idGrupo)
         {
@@ -160,8 +163,8 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(alumnos);
         }
 
-        // POST: api/grupos/inscribir
         [HttpPost("inscribir")]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<GrupoAlumnoDto>> InscribirAlumno(GrupoAlumnoCreateDto dto)
         {
             var grupoExiste = await _context.Grupos.AnyAsync(g => g.IdGrupo == dto.IdGrupo && g.Activo);
@@ -196,8 +199,8 @@ namespace PortalNoticiasAPI.Controllers
             });
         }
 
-        // DELETE: api/grupos/desinscribir/5 (id de GrupoAlumno)
         [HttpDelete("desinscribir/{idGrupoAlumno}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DesinscribirAlumno(int idGrupoAlumno)
         {
             var inscripcion = await _context.GruposAlumnos.FindAsync(idGrupoAlumno);

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -34,6 +35,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<AcademiaDto>> CrearAcademia(AcademiaCreateUpdateDto dto)
         {
             var academia = new Academia { Nombre = dto.Nombre, Descripcion = dto.Descripcion, FechaAlta = DateTime.Now, Activo = true };
@@ -43,6 +45,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarAcademia(int id, AcademiaCreateUpdateDto dto)
         {
             var academia = await _context.Academias.FindAsync(id);
@@ -56,6 +59,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarAcademia(int id)
         {
             var academia = await _context.Academias.FindAsync(id);

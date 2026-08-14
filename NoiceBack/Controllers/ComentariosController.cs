@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -13,7 +14,6 @@ namespace PortalNoticiasAPI.Controllers
         private readonly PortalNoticiasContext _context;
         public ComentariosController(PortalNoticiasContext context) => _context = context;
 
-        // GET: api/comentarios/porNoticia/5
         [HttpGet("porNoticia/{idNoticia}")]
         public async Task<ActionResult<IEnumerable<ComentarioDto>>> GetComentariosPorNoticia(int idNoticia)
         {
@@ -35,9 +35,9 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(comentarios);
         }
 
-        // POST: api/comentarios
-        // Crea el Comentario y su relación con la Noticia en una sola operación
+        // Cualquier usuario logueado (Admin, Docente o Alumno) puede comentar
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ComentarioDto>> CrearComentario(ComentarioCreateDto dto)
         {
             var noticiaExiste = await _context.Noticias.AnyAsync(n => n.IdNoticia == dto.IdNoticia && n.Activo);
@@ -57,7 +57,7 @@ namespace PortalNoticiasAPI.Controllers
                 Activo = true
             };
             _context.Comentarios.Add(comentario);
-            await _context.SaveChangesAsync(); // para obtener el IdComentario generado
+            await _context.SaveChangesAsync();
 
             var relacion = new NoticiaComentario
             {
@@ -78,8 +78,8 @@ namespace PortalNoticiasAPI.Controllers
             });
         }
 
-        // DELETE: api/comentarios/5 (borrado lógico)
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarComentario(int id)
         {
             var comentario = await _context.Comentarios.FindAsync(id);

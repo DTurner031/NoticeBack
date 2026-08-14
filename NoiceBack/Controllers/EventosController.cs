@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -73,6 +74,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador,Docente")]
         public async Task<ActionResult<EventoDto>> CrearEvento(EventoCreateUpdateDto dto)
         {
             var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.IdUsuario == dto.IdUsuario && u.Activo);
@@ -103,6 +105,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador,Docente")]
         public async Task<IActionResult> ActualizarEvento(int id, EventoCreateUpdateDto dto)
         {
             var evento = await _context.Eventos.FindAsync(id);
@@ -123,6 +126,7 @@ namespace PortalNoticiasAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarEvento(int id)
         {
             var evento = await _context.Eventos.FindAsync(id);

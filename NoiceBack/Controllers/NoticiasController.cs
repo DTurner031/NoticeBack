@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -17,8 +18,6 @@ namespace PortalNoticiasAPI.Controllers
             _context = context;
         }
 
-        // GET: api/noticias
-        // Devuelve solo las noticias activas, con el nombre del autor y la categoría
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NoticiaDto>>> GetNoticias()
         {
@@ -45,7 +44,6 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(noticias);
         }
 
-        // GET: api/noticias/5
         [HttpGet("{id}")]
         public async Task<ActionResult<NoticiaDto>> GetNoticia(int id)
         {
@@ -74,11 +72,10 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(noticia);
         }
 
-        // POST: api/noticias
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<NoticiaDto>> CrearNoticia(NoticiaCreateDto dto)
         {
-            // Validar que el usuario y la categoría existan
             var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.IdUsuario == dto.IdUsuario && u.Activo);
             if (!usuarioExiste)
                 return BadRequest(new { mensaje = "El usuario especificado no existe o está inactivo" });
@@ -104,8 +101,8 @@ namespace PortalNoticiasAPI.Controllers
             return CreatedAtAction(nameof(GetNoticia), new { id = noticia.IdNoticia }, noticia);
         }
 
-        // PUT: api/noticias/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarNoticia(int id, NoticiaUpdateDto dto)
         {
             var noticia = await _context.Noticias.FindAsync(id);
@@ -126,9 +123,8 @@ namespace PortalNoticiasAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/noticias/5
-        // Borrado lógico: no elimina el registro, solo lo marca como inactivo
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> EliminarNoticia(int id)
         {
             var noticia = await _context.Noticias.FindAsync(id);

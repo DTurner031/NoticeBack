@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
@@ -8,12 +9,12 @@ namespace PortalNoticiasAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Administrador")]
     public class UsuariosController : ControllerBase
     {
         private readonly PortalNoticiasContext _context;
         public UsuariosController(PortalNoticiasContext context) => _context = context;
 
-        // GET: api/usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetUsuarios()
         {
@@ -34,7 +35,6 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(usuarios);
         }
 
-        // GET: api/usuarios/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UsuarioDto>> GetUsuario(int id)
         {
@@ -59,9 +59,6 @@ namespace PortalNoticiasAPI.Controllers
             return Ok(usuario);
         }
 
-        // POST: api/usuarios
-        // NOTA: la contraseña se guarda en texto plano por ahora.
-        // Cuando implementemos el login, aquí se debe aplicar hash (BCrypt) antes de guardar.
         [HttpPost]
         public async Task<ActionResult<UsuarioDto>> CrearUsuario(UsuarioCreateDto dto)
         {
@@ -79,7 +76,7 @@ namespace PortalNoticiasAPI.Controllers
                 IdRol = dto.IdRol,
                 NoIdentificacion = dto.NoIdentificacion,
                 Correo = dto.Correo,
-                Contrasena = dto.Contrasena, // TODO: hashear antes de producción
+                Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena),
                 FechaAlta = DateTime.Now,
                 Activo = true
             };
@@ -99,7 +96,6 @@ namespace PortalNoticiasAPI.Controllers
                 });
         }
 
-        // PUT: api/usuarios/5
         [HttpPut("{id}")]
         public async Task<IActionResult> ActualizarUsuario(int id, UsuarioUpdateDto dto)
         {
@@ -115,7 +111,6 @@ namespace PortalNoticiasAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/usuarios/5 (borrado lógico)
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarUsuario(int id)
         {

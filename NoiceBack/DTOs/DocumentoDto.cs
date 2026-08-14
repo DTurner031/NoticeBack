@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace PortalNoticiasAPI.DTOs
 {
@@ -12,6 +13,7 @@ namespace PortalNoticiasAPI.DTOs
         public bool Activo { get; set; }
     }
 
+    // Clase auxiliar requerida para que Swagger genere bien el formulario de subida de archivos
     public class DocumentoUploadDto
     {
         public int IdNoticia { get; set; }
