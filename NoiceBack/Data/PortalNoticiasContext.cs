@@ -28,30 +28,86 @@ namespace PortalNoticiasAPI.Data
             modelBuilder.Entity<NombreRol>(e =>
             {
                 e.ToTable("NombreRol");
+
                 e.HasKey(x => x.IdRol);
-                e.Property(x => x.IdRol).HasColumnName("idRol");
-                e.Property(x => x.Nombre).HasColumnName("NombreRol").IsRequired();
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdRol)
+                    .HasColumnName("idRol")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.Nombre)
+                    .HasColumnName("NombreRol")
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
             });
 
             // ---------- Usuario ----------
             modelBuilder.Entity<Usuario>(e =>
             {
                 e.ToTable("Usuarios");
+
                 e.HasKey(x => x.IdUsuario);
-                e.Property(x => x.IdUsuario).HasColumnName("idUsuario");
-                e.Property(x => x.Nombre).HasColumnName("Nombre").IsRequired();
-                e.Property(x => x.IdRol).HasColumnName("idRol");
-                e.Property(x => x.NoIdentificacion).HasColumnName("NoIdentificacion");
-                e.Property(x => x.Correo).HasColumnName("Correo").IsRequired();
-                e.Property(x => x.Contrasena).HasColumnName("Contrasena").IsRequired();
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdUsuario)
+                    .HasColumnName("idUsuario")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.Nombre)
+                    .HasColumnName("Nombre")
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                e.Property(x => x.IdRol)
+                    .HasColumnName("idRol")
+                    .IsRequired();
+
+                e.Property(x => x.NoIdentificacion)
+                    .HasColumnName("NoIdentificacion")
+                    .IsRequired();
+
+                e.Property(x => x.Correo)
+                    .HasColumnName("Correo")
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                e.Property(x => x.Contrasena)
+                    .HasColumnName("Contrasena")
+                    .HasMaxLength(255)
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
+
+                e.HasIndex(x => x.Correo)
+                    .IsUnique()
+                    .HasDatabaseName("uq_usuarios_correo");
+
+                e.HasIndex(x => x.NoIdentificacion)
+                    .IsUnique()
+                    .HasDatabaseName("uq_usuarios_noident");
 
                 e.HasOne(x => x.Rol)
-                 .WithMany(r => r.Usuarios)
-                 .HasForeignKey(x => x.IdRol);
+                    .WithMany(r => r.Usuarios)
+                    .HasForeignKey(x => x.IdRol)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_usuarios_rol");
             });
 
             // ---------- Categoria ----------
