@@ -249,37 +249,84 @@ namespace PortalNoticiasAPI.Data
             modelBuilder.Entity<Comentario>(e =>
             {
                 e.ToTable("Comentarios");
+
                 e.HasKey(x => x.IdComentario);
-                e.Property(x => x.IdComentario).HasColumnName("idComentario");
-                e.Property(x => x.ComentarioTexto).HasColumnName("Comentario").IsRequired();
-                e.Property(x => x.FechaPublicacion).HasColumnName("FechaPublicacion");
-                e.Property(x => x.IdUsuario).HasColumnName("idUsuario");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdComentario)
+                    .HasColumnName("idComentario")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.ComentarioTexto)
+                    .HasColumnName("Comentario")
+                    .HasMaxLength(1000)
+                    .IsRequired();
+
+                e.Property(x => x.FechaPublicacion)
+                    .HasColumnName("FechaPublicacion")
+                    .HasColumnType("date")
+                    .IsRequired();
+
+                e.Property(x => x.IdUsuario)
+                    .HasColumnName("idUsuario")
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
 
                 e.HasOne(x => x.Usuario)
-                 .WithMany(u => u.Comentarios)
-                 .HasForeignKey(x => x.IdUsuario);
+                    .WithMany(u => u.Comentarios)
+                    .HasForeignKey(x => x.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_comentarios_usuario");
             });
 
             // ---------- NoticiaComentario (puente) ----------
             modelBuilder.Entity<NoticiaComentario>(e =>
             {
                 e.ToTable("NoticiasComentarios");
+
                 e.HasKey(x => x.IdNoticiaComentario);
-                e.Property(x => x.IdNoticiaComentario).HasColumnName("idNoticiaComentario");
-                e.Property(x => x.IdNoticia).HasColumnName("idNoticia");
-                e.Property(x => x.IdComentario).HasColumnName("idComentario");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdNoticiaComentario)
+                    .HasColumnName("idNoticiaComentario")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.IdNoticia)
+                    .HasColumnName("idNoticia")
+                    .IsRequired();
+
+                e.Property(x => x.IdComentario)
+                    .HasColumnName("idComentario")
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
 
                 e.HasOne(x => x.Noticia)
-                 .WithMany(n => n.NoticiasComentarios)
-                 .HasForeignKey(x => x.IdNoticia);
+                    .WithMany(n => n.NoticiasComentarios)
+                    .HasForeignKey(x => x.IdNoticia)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_noticom_noticia");
 
                 e.HasOne(x => x.Comentario)
-                 .WithMany(c => c.NoticiasComentarios)
-                 .HasForeignKey(x => x.IdComentario);
+                    .WithMany(c => c.NoticiasComentarios)
+                    .HasForeignKey(x => x.IdComentario)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_noticom_comentario");
             });
 
             // ---------- Evento ----------
