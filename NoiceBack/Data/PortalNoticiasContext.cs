@@ -114,53 +114,135 @@ namespace PortalNoticiasAPI.Data
             modelBuilder.Entity<Categoria>(e =>
             {
                 e.ToTable("Categorias");
+
                 e.HasKey(x => x.IdCategoria);
-                e.Property(x => x.IdCategoria).HasColumnName("idCategoria");
-                e.Property(x => x.CategoriaNombre).HasColumnName("CategoriaNombre").IsRequired();
-                e.Property(x => x.Descripcion).HasColumnName("Descripcion");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdCategoria)
+                    .HasColumnName("idCategoria")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.CategoriaNombre)
+                    .HasColumnName("CategoriaNombre")
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                e.Property(x => x.Descripcion)
+                    .HasColumnName("Descripcion")
+                    .HasMaxLength(255);
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
             });
 
             // ---------- Noticia ----------
             modelBuilder.Entity<Noticia>(e =>
             {
                 e.ToTable("Noticias");
+
                 e.HasKey(x => x.IdNoticia);
-                e.Property(x => x.IdNoticia).HasColumnName("idNoticia");
-                e.Property(x => x.Titulo).HasColumnName("Titulo").IsRequired();
-                e.Property(x => x.Contenido).HasColumnName("Contenido").IsRequired();
-                e.Property(x => x.IdUsuario).HasColumnName("idUsuario");
-                e.Property(x => x.IdCategoria).HasColumnName("idCategoria");
-                e.Property(x => x.FechaPublicacion).HasColumnName("FechaPublicacion");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdNoticia)
+                    .HasColumnName("idNoticia")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.Titulo)
+                    .HasColumnName("Titulo")
+                    .HasMaxLength(200)
+                    .IsRequired();
+
+                e.Property(x => x.Contenido)
+                    .HasColumnName("Contenido")
+                    .HasColumnType("text")
+                    .IsRequired();
+
+                e.Property(x => x.IdUsuario)
+                    .HasColumnName("idUsuario")
+                    .IsRequired();
+
+                e.Property(x => x.IdCategoria)
+                    .HasColumnName("idCategoria")
+                    .IsRequired();
+
+                e.Property(x => x.FechaPublicacion)
+                    .HasColumnName("FechaPublicacion")
+                    .HasColumnType("date")
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
 
                 e.HasOne(x => x.Usuario)
-                 .WithMany(u => u.Noticias)
-                 .HasForeignKey(x => x.IdUsuario);
+                    .WithMany(u => u.Noticias)
+                    .HasForeignKey(x => x.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_noticias_usuario");
 
                 e.HasOne(x => x.Categoria)
-                 .WithMany(c => c.Noticias)
-                 .HasForeignKey(x => x.IdCategoria);
+                    .WithMany(c => c.Noticias)
+                    .HasForeignKey(x => x.IdCategoria)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_noticias_categoria");
             });
 
             // ---------- NoticiaDocumento ----------
             modelBuilder.Entity<NoticiaDocumento>(e =>
             {
                 e.ToTable("NoticiasDocumentos");
+
                 e.HasKey(x => x.IdNoticiaDocumento);
-                e.Property(x => x.IdNoticiaDocumento).HasColumnName("idNoticiaDocumento");
-                e.Property(x => x.IdNoticia).HasColumnName("idNoticia");
-                e.Property(x => x.DocumentoNombre).HasColumnName("DocumentoNombre").IsRequired();
-                e.Property(x => x.RutaArchivo).HasColumnName("RutaArchivo").IsRequired();
-                e.Property(x => x.TipoDocumento).HasColumnName("TipoDocumento").IsRequired();
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdNoticiaDocumento)
+                    .HasColumnName("idNoticiaDocumento")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.IdNoticia)
+                    .HasColumnName("idNoticia")
+                    .IsRequired();
+
+                e.Property(x => x.DocumentoNombre)
+                    .HasColumnName("DocumentoNombre")
+                    .HasMaxLength(200)
+                    .IsRequired();
+
+                e.Property(x => x.RutaArchivo)
+                    .HasColumnName("RutaArchivo")
+                    .HasMaxLength(500)
+                    .IsRequired();
+
+                e.Property(x => x.TipoDocumento)
+                    .HasColumnName("TipoDocumento")
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
 
                 e.HasOne(x => x.Noticia)
-                 .WithMany(n => n.Documentos)
-                 .HasForeignKey(x => x.IdNoticia);
+                    .WithMany(n => n.Documentos)
+                    .HasForeignKey(x => x.IdNoticia)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_noticiasdocumentos_noticia");
             });
 
             // ---------- Comentario ----------
