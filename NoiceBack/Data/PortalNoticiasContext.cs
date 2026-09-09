@@ -479,63 +479,150 @@ namespace PortalNoticiasAPI.Data
             modelBuilder.Entity<GrupoTipo>(e =>
             {
                 e.ToTable("GruposTipos");
+
                 e.HasKey(x => x.IdGrupoTipo);
-                e.Property(x => x.IdGrupoTipo).HasColumnName("idGrupoTipo");
-                e.Property(x => x.Tipo).HasColumnName("GrupoTipo").IsRequired();
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdGrupoTipo)
+                    .HasColumnName("idGrupoTipo")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.Tipo)
+                    .HasColumnName("GrupoTipo")
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
             });
 
             // ---------- Grupo ----------
             modelBuilder.Entity<Grupo>(e =>
             {
                 e.ToTable("Grupos");
+
                 e.HasKey(x => x.IdGrupo);
-                e.Property(x => x.IdGrupo).HasColumnName("idGrupo");
-                e.Property(x => x.IdMateria).HasColumnName("idMateria");
-                e.Property(x => x.IdUsuario).HasColumnName("idUsuario");
-                e.Property(x => x.IdGrupoTipo).HasColumnName("idGrupoTipo");
-                e.Property(x => x.FechaInicio).HasColumnName("FechaInicio");
-                e.Property(x => x.FechaFin).HasColumnName("FechaFin");
-                e.Property(x => x.HoraInicio).HasColumnName("HoraInicio");
-                e.Property(x => x.HoraFin).HasColumnName("HoraFin");
-                e.Property(x => x.Dias).HasColumnName("Dias").IsRequired();
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdGrupo)
+                    .HasColumnName("idGrupo")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.IdMateria)
+                    .HasColumnName("idMateria")
+                    .IsRequired();
+
+                e.Property(x => x.IdUsuario)
+                    .HasColumnName("idUsuario")
+                    .IsRequired();
+
+                e.Property(x => x.IdGrupoTipo)
+                    .HasColumnName("idGrupoTipo")
+                    .IsRequired();
+
+                e.Property(x => x.FechaInicio)
+                    .HasColumnName("FechaInicio")
+                    .HasColumnType("date")
+                    .IsRequired();
+
+                e.Property(x => x.FechaFin)
+                    .HasColumnName("FechaFin")
+                    .HasColumnType("date")
+                    .IsRequired();
+
+                e.Property(x => x.HoraInicio)
+                    .HasColumnName("HoraInicio")
+                    .HasColumnType("time")
+                    .IsRequired();
+
+                e.Property(x => x.HoraFin)
+                    .HasColumnName("HoraFin")
+                    .HasColumnType("time")
+                    .IsRequired();
+
+                e.Property(x => x.Dias)
+                    .HasColumnName("Dias")
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
 
                 e.HasOne(x => x.Materia)
-                 .WithMany(m => m.Grupos)
-                 .HasForeignKey(x => x.IdMateria);
+                    .WithMany(m => m.Grupos)
+                    .HasForeignKey(x => x.IdMateria)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_grupos_materia");
 
                 e.HasOne(x => x.Profesor)
-                 .WithMany()
-                 .HasForeignKey(x => x.IdUsuario);
+                    .WithMany()
+                    .HasForeignKey(x => x.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_grupos_profesor");
 
                 e.HasOne(x => x.GrupoTipoNav)
-                 .WithMany(gt => gt.Grupos)
-                 .HasForeignKey(x => x.IdGrupoTipo);
+                    .WithMany(gt => gt.Grupos)
+                    .HasForeignKey(x => x.IdGrupoTipo)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_grupos_tipo");
             });
 
-            // ---------- GrupoAlumno (puente) ----------
+            // ---------- GrupoAlumno ----------
             modelBuilder.Entity<GrupoAlumno>(e =>
             {
                 e.ToTable("GruposAlumnos");
+
                 e.HasKey(x => x.IdGrupoAlumno);
-                e.Property(x => x.IdGrupoAlumno).HasColumnName("idGrupoAlumno");
-                e.Property(x => x.IdGrupo).HasColumnName("idGrupo");
-                e.Property(x => x.IdUsuario).HasColumnName("idUsuario");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdGrupoAlumno)
+                    .HasColumnName("idGrupoAlumno")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.IdGrupo)
+                    .HasColumnName("idGrupo")
+                    .IsRequired();
+
+                e.Property(x => x.IdUsuario)
+                    .HasColumnName("idUsuario")
+                    .IsRequired();
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
+
+                e.HasIndex(x => new { x.IdGrupo, x.IdUsuario })
+                    .IsUnique()
+                    .HasDatabaseName("uq_gpoalumnos");
 
                 e.HasOne(x => x.Grupo)
-                 .WithMany(g => g.GruposAlumnos)
-                 .HasForeignKey(x => x.IdGrupo);
+                    .WithMany(g => g.GruposAlumnos)
+                    .HasForeignKey(x => x.IdGrupo)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_gpoalumnos_grupo");
 
                 e.HasOne(x => x.Alumno)
-                 .WithMany()
-                 .HasForeignKey(x => x.IdUsuario);
-
-                e.HasIndex(x => new { x.IdGrupo, x.IdUsuario }).IsUnique();
+                    .WithMany()
+                    .HasForeignKey(x => x.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_gpoalumnos_alumno");
             });
         }
     }
