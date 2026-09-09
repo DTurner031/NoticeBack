@@ -15,9 +15,10 @@ USE portal_noticias;
 
 CREATE TABLE NombreRol (
     idRol       INT AUTO_INCREMENT PRIMARY KEY,
-    NombreRol   VARCHAR(50)  NOT NULL,
-    FechaAlta   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Activo      BIT          NOT NULL DEFAULT 1
+    NombreRol   VARCHAR(50) NOT NULL,
+    FechaAlta   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Activo      BIT NOT NULL DEFAULT 1,
+    CONSTRAINT uq_nombrerol_nombre UNIQUE (NombreRol)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Usuarios (
@@ -44,6 +45,7 @@ CREATE TABLE Categorias (
     Descripcion      VARCHAR(255),
     FechaAlta        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Activo           BIT          NOT NULL DEFAULT 1
+    CONSTRAINT uq_categorias_nombre UNIQUE (CategoriaNombre)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Noticias (
@@ -121,6 +123,7 @@ CREATE TABLE Academias (
     Descripcion  VARCHAR(255),
     FechaAlta    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Activo       BIT          NOT NULL DEFAULT 1
+    CONSTRAINT uq_academias_nombre UNIQUE (Nombre)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Materias (
@@ -138,6 +141,7 @@ CREATE TABLE GruposTipos (
     GrupoTipo   VARCHAR(100) NOT NULL,
     FechaAlta   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Activo      BIT          NOT NULL DEFAULT 1
+    CONSTRAINT uq_grupostipos_nombre UNIQUE (GrupoTipo)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Grupos (

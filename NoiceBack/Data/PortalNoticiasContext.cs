@@ -49,6 +49,10 @@ namespace PortalNoticiasAPI.Data
                     .HasColumnName("Activo")
                     .HasColumnType("bit(1)")
                     .HasDefaultValue(true);
+
+                e.HasIndex(x => x.Nombre)
+                    .IsUnique()
+                    .HasDatabaseName("uq_nombrerol_nombre");
             });
 
             // ---------- Usuario ----------
@@ -140,6 +144,10 @@ namespace PortalNoticiasAPI.Data
                     .HasColumnName("Activo")
                     .HasColumnType("bit(1)")
                     .HasDefaultValue(true);
+
+                e.HasIndex(x => x.CategoriaNombre)
+                    .IsUnique()
+                    .HasDatabaseName("uq_categorias_nombre");
             });
 
             // ---------- Noticia ----------
@@ -433,6 +441,10 @@ namespace PortalNoticiasAPI.Data
                     .HasColumnName("Activo")
                     .HasColumnType("bit(1)")
                     .HasDefaultValue(true);
+
+                e.HasIndex(x => x.Nombre)
+                    .IsUnique()
+                    .HasDatabaseName("uq_academias_nombre");
             });
 
             // ---------- Materia ----------
@@ -501,6 +513,10 @@ namespace PortalNoticiasAPI.Data
                     .HasColumnName("Activo")
                     .HasColumnType("bit(1)")
                     .HasDefaultValue(true);
+
+                e.HasIndex(x => x.Tipo)
+                    .IsUnique()
+                    .HasDatabaseName("uq_grupostipos_nombre");
             });
 
             // ---------- Grupo ----------
