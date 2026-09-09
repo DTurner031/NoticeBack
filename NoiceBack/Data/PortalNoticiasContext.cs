@@ -73,6 +73,7 @@ namespace PortalNoticiasAPI.Data
 
                 e.Property(x => x.NoIdentificacion)
                     .HasColumnName("NoIdentificacion")
+                    .HasMaxLength(30)
                     .IsRequired();
 
                 e.Property(x => x.Correo)

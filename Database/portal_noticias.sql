@@ -24,7 +24,7 @@ CREATE TABLE Usuarios (
     idUsuario        INT AUTO_INCREMENT PRIMARY KEY,
     Nombre           VARCHAR(150) NOT NULL,
     idRol            INT          NOT NULL,
-    NoIdentificacion INT          NOT NULL,
+    NoIdentificacion VARCHAR(30)  NOT NULL,
     Correo           VARCHAR(150) NOT NULL,
     Contrasena       VARCHAR(255) NOT NULL,
     FechaAlta        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -190,5 +190,3 @@ INSERT INTO GruposTipos (GrupoTipo) VALUES
 -- ============================================================
 -- Fin del script
 -- ============================================================
-
-Te lo escribi
