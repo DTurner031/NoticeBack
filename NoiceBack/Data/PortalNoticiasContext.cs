@@ -407,29 +407,72 @@ namespace PortalNoticiasAPI.Data
             modelBuilder.Entity<Academia>(e =>
             {
                 e.ToTable("Academias");
+
                 e.HasKey(x => x.IdAcademia);
-                e.Property(x => x.IdAcademia).HasColumnName("idAcademia");
-                e.Property(x => x.Nombre).HasColumnName("Nombre").IsRequired();
-                e.Property(x => x.Descripcion).HasColumnName("Descripcion");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdAcademia)
+                    .HasColumnName("idAcademia")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.Nombre)
+                    .HasColumnName("Nombre")
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                e.Property(x => x.Descripcion)
+                    .HasColumnName("Descripcion")
+                    .HasMaxLength(255);
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
             });
 
             // ---------- Materia ----------
             modelBuilder.Entity<Materia>(e =>
             {
                 e.ToTable("Materias");
+
                 e.HasKey(x => x.IdMateria);
-                e.Property(x => x.IdMateria).HasColumnName("idMateria");
-                e.Property(x => x.IdAcademia).HasColumnName("idAcademia");
-                e.Property(x => x.MateriaNombre).HasColumnName("MateriaNombre").IsRequired();
-                e.Property(x => x.Descripcion).HasColumnName("Descripcion");
-                e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
-                e.Property(x => x.Activo).HasColumnName("Activo");
+
+                e.Property(x => x.IdMateria)
+                    .HasColumnName("idMateria")
+                    .ValueGeneratedOnAdd();
+
+                e.Property(x => x.IdAcademia)
+                    .HasColumnName("idAcademia")
+                    .IsRequired();
+
+                e.Property(x => x.MateriaNombre)
+                    .HasColumnName("MateriaNombre")
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                e.Property(x => x.Descripcion)
+                    .HasColumnName("Descripcion")
+                    .HasMaxLength(255);
+
+                e.Property(x => x.FechaAlta)
+                    .HasColumnName("FechaAlta")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                e.Property(x => x.Activo)
+                    .HasColumnName("Activo")
+                    .HasColumnType("bit(1)")
+                    .HasDefaultValue(true);
 
                 e.HasOne(x => x.Academia)
-                 .WithMany(a => a.Materias)
-                 .HasForeignKey(x => x.IdAcademia);
+                    .WithMany(a => a.Materias)
+                    .HasForeignKey(x => x.IdAcademia)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("fk_materias_academia");
             });
 
             // ---------- GrupoTipo ----------
