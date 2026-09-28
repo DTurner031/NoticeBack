@@ -14,9 +14,9 @@ namespace PortalNoticiasAPI.DTOs
         public TimeSpan? HoraFin { get; set; }
         public int IdUsuario { get; set; }
         public string? OrganizadorNombre { get; set; }
-        public int? IdCategoria { get; set; }
-        public string? CategoriaNombre { get; set; }
+        public string? CategoriaEvento { get; set; }
         public bool Activo { get; set; }
+        public AudienciaDto Audiencia { get; set; } = new();
     }
 
     public class EventoCreateUpdateDto
@@ -29,6 +29,7 @@ namespace PortalNoticiasAPI.DTOs
         public TimeSpan? HoraInicio { get; set; }
         public TimeSpan? HoraFin { get; set; }
         public int IdUsuario { get; set; }
-        public int? IdCategoria { get; set; }
+        public string? CategoriaEvento { get; set; }
+        public AudienciaDto? Audiencia { get; set; }
     }
 }

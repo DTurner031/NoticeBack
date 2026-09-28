@@ -6,17 +6,29 @@ namespace PortalNoticiasAPI.DTOs
     public class DocumentoDto
     {
         public int IdNoticiaDocumento { get; set; }
-        public int IdNoticia { get; set; }
-        public string DocumentoNombre { get; set; } = string.Empty;
-        public string RutaArchivo { get; set; } = string.Empty;
+        public int? IdUsuario { get; set; }
+        public string? AutorNombre { get; set; }
+        public string Titulo { get; set; } = string.Empty;
+        public string? Descripcion { get; set; }
         public string TipoDocumento { get; set; } = string.Empty;
+        public string? RutaArchivo { get; set; }
+        public string? Url { get; set; }
+        public DateTime? FechaPublicacion { get; set; }
         public bool Activo { get; set; }
+        public AudienciaDto Audiencia { get; set; } = new();
     }
 
-    // Clase auxiliar requerida para que Swagger genere bien el formulario de subida de archivos
+    // Formulario multipart: archivo es opcional (puede ser solo un enlace/URL),
+    // la audiencia viaja como texto JSON porque los objetos anidados no se
+    // pueden mandar directo en un formulario multipart/form-data.
     public class DocumentoUploadDto
     {
-        public int IdNoticia { get; set; }
-        public IFormFile Archivo { get; set; } = null!;
+        public string Titulo { get; set; } = string.Empty;
+        public string TipoDocumento { get; set; } = string.Empty;
+        public string? Descripcion { get; set; }
+        public string? Url { get; set; }
+        public DateTime? FechaPublicacion { get; set; }
+        public string? AudienciaJson { get; set; }
+        public IFormFile? Archivo { get; set; }
     }
 }

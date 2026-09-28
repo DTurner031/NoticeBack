@@ -79,6 +79,8 @@ namespace PortalNoticiasAPI.Data
                 e.Property(x => x.FechaPublicacion).HasColumnName("FechaPublicacion");
                 e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
                 e.Property(x => x.Activo).HasColumnName("Activo");
+                e.Property(x => x.Prioridad).HasColumnName("Prioridad");
+                e.Property(x => x.AudienciaJson).HasColumnName("Audiencia").HasColumnType("json");
 
                 e.HasOne(x => x.Usuario)
                  .WithMany(u => u.Noticias)
@@ -86,7 +88,8 @@ namespace PortalNoticiasAPI.Data
 
                 e.HasOne(x => x.Categoria)
                  .WithMany(c => c.Noticias)
-                 .HasForeignKey(x => x.IdCategoria);
+                 .HasForeignKey(x => x.IdCategoria)
+                 .IsRequired(false); // <- este .IsRequired(false) es el cambio clave
             });
 
             // ---------- NoticiaDocumento ----------
@@ -97,14 +100,25 @@ namespace PortalNoticiasAPI.Data
                 e.Property(x => x.IdNoticiaDocumento).HasColumnName("idNoticiaDocumento");
                 e.Property(x => x.IdNoticia).HasColumnName("idNoticia");
                 e.Property(x => x.DocumentoNombre).HasColumnName("DocumentoNombre").IsRequired();
-                e.Property(x => x.RutaArchivo).HasColumnName("RutaArchivo").IsRequired();
+                e.Property(x => x.RutaArchivo).HasColumnName("RutaArchivo");
                 e.Property(x => x.TipoDocumento).HasColumnName("TipoDocumento").IsRequired();
                 e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
                 e.Property(x => x.Activo).HasColumnName("Activo");
+                e.Property(x => x.Descripcion).HasColumnName("Descripcion");
+                e.Property(x => x.Url).HasColumnName("Url");
+                e.Property(x => x.FechaPublicacion).HasColumnName("FechaPublicacion");
+                e.Property(x => x.Prioridad).HasColumnName("Prioridad");
+                e.Property(x => x.AudienciaJson).HasColumnName("Audiencia").HasColumnType("json");
+                e.Property(x => x.IdUsuario).HasColumnName("idUsuario");
 
+                e.HasOne(x => x.Usuario)
+                 .WithMany()
+                 .HasForeignKey(x => x.IdUsuario)
+                 .IsRequired(false);
                 e.HasOne(x => x.Noticia)
                  .WithMany(n => n.Documentos)
-                 .HasForeignKey(x => x.IdNoticia);
+                 .HasForeignKey(x => x.IdNoticia)
+                 .IsRequired(false);
             });
 
             // ---------- Comentario ----------
@@ -161,6 +175,9 @@ namespace PortalNoticiasAPI.Data
                 e.Property(x => x.IdCategoria).HasColumnName("idCategoria");
                 e.Property(x => x.FechaAlta).HasColumnName("FechaAlta");
                 e.Property(x => x.Activo).HasColumnName("Activo");
+                e.Property(x => x.CategoriaEvento).HasColumnName("CategoriaEvento");
+                e.Property(x => x.Prioridad).HasColumnName("Prioridad");
+                e.Property(x => x.AudienciaJson).HasColumnName("Audiencia").HasColumnType("json");
 
                 e.HasOne(x => x.Usuario)
                  .WithMany(u => u.Eventos)

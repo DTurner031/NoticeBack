@@ -17,6 +17,11 @@ namespace PortalNoticiasAPI.Models
         public DateTime FechaAlta { get; set; }
         public bool Activo { get; set; }
 
+        // Nuevo: mismo patrón que Noticias
+        public string? CategoriaEvento { get; set; } // texto libre, distinto del catálogo IdCategoria
+        public string Prioridad { get; set; } = "normal";
+        public string? AudienciaJson { get; set; }
+
         public Usuario? Usuario { get; set; }
         public Categoria? Categoria { get; set; }
     }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,43 @@ namespace PortalNoticiasAPI.Controllers
     public class NoticiasController : ControllerBase
     {
         private readonly PortalNoticiasContext _context;
+        private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
 
         public NoticiasController(PortalNoticiasContext context)
         {
             _context = context;
+        }
+
+        // Convierte la entidad (con AudienciaJson como texto) al DTO que consume el frontend
+        private static NoticiaDto ToDto(Noticia n)
+        {
+            AudienciaDto audiencia;
+            try
+            {
+                audiencia = string.IsNullOrWhiteSpace(n.AudienciaJson)
+                    ? new AudienciaDto()
+                    : JsonSerializer.Deserialize<AudienciaDto>(n.AudienciaJson, JsonOpts) ?? new AudienciaDto();
+            }
+            catch
+            {
+                audiencia = new AudienciaDto();
+            }
+            audiencia.Prioridad = n.Prioridad;
+
+            return new NoticiaDto
+            {
+                IdNoticia = n.IdNoticia,
+                Titulo = n.Titulo,
+                Contenido = n.Contenido,
+                IdUsuario = n.IdUsuario,
+                AutorNombre = n.Usuario?.Nombre,
+                IdCategoria = n.IdCategoria,
+                CategoriaNombre = n.Categoria?.CategoriaNombre,
+                FechaPublicacion = n.FechaPublicacion,
+                FechaAlta = n.FechaAlta,
+                Activo = n.Activo,
+                Audiencia = audiencia
+            };
         }
 
         [HttpGet]
@@ -26,22 +60,9 @@ namespace PortalNoticiasAPI.Controllers
                 .Include(n => n.Categoria)
                 .Where(n => n.Activo)
                 .OrderByDescending(n => n.FechaPublicacion)
-                .Select(n => new NoticiaDto
-                {
-                    IdNoticia = n.IdNoticia,
-                    Titulo = n.Titulo,
-                    Contenido = n.Contenido,
-                    IdUsuario = n.IdUsuario,
-                    AutorNombre = n.Usuario!.Nombre,
-                    IdCategoria = n.IdCategoria,
-                    CategoriaNombre = n.Categoria!.CategoriaNombre,
-                    FechaPublicacion = n.FechaPublicacion,
-                    FechaAlta = n.FechaAlta,
-                    Activo = n.Activo
-                })
                 .ToListAsync();
 
-            return Ok(noticias);
+            return Ok(noticias.Select(ToDto));
         }
 
         [HttpGet("{id}")]
@@ -50,26 +71,12 @@ namespace PortalNoticiasAPI.Controllers
             var noticia = await _context.Noticias
                 .Include(n => n.Usuario)
                 .Include(n => n.Categoria)
-                .Where(n => n.IdNoticia == id && n.Activo)
-                .Select(n => new NoticiaDto
-                {
-                    IdNoticia = n.IdNoticia,
-                    Titulo = n.Titulo,
-                    Contenido = n.Contenido,
-                    IdUsuario = n.IdUsuario,
-                    AutorNombre = n.Usuario!.Nombre,
-                    IdCategoria = n.IdCategoria,
-                    CategoriaNombre = n.Categoria!.CategoriaNombre,
-                    FechaPublicacion = n.FechaPublicacion,
-                    FechaAlta = n.FechaAlta,
-                    Activo = n.Activo
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(n => n.IdNoticia == id && n.Activo);
 
             if (noticia == null)
                 return NotFound(new { mensaje = $"No se encontró la noticia con id {id}" });
 
-            return Ok(noticia);
+            return Ok(ToDto(noticia));
         }
 
         [HttpPost]
@@ -80,9 +87,14 @@ namespace PortalNoticiasAPI.Controllers
             if (!usuarioExiste)
                 return BadRequest(new { mensaje = "El usuario especificado no existe o está inactivo" });
 
-            var categoriaExiste = await _context.Categorias.AnyAsync(c => c.IdCategoria == dto.IdCategoria && c.Activo);
-            if (!categoriaExiste)
-                return BadRequest(new { mensaje = "La categoría especificada no existe o está inactiva" });
+            if (dto.IdCategoria.HasValue)
+            {
+                var categoriaExiste = await _context.Categorias.AnyAsync(c => c.IdCategoria == dto.IdCategoria && c.Activo);
+                if (!categoriaExiste)
+                    return BadRequest(new { mensaje = "La categoría especificada no existe o está inactiva" });
+            }
+
+            var audiencia = dto.Audiencia ?? new AudienciaDto();
 
             var noticia = new Noticia
             {
@@ -91,6 +103,8 @@ namespace PortalNoticiasAPI.Controllers
                 IdUsuario = dto.IdUsuario,
                 IdCategoria = dto.IdCategoria,
                 FechaPublicacion = dto.FechaPublicacion,
+                Prioridad = string.IsNullOrWhiteSpace(audiencia.Prioridad) ? "normal" : audiencia.Prioridad,
+                AudienciaJson = JsonSerializer.Serialize(audiencia, JsonOpts),
                 FechaAlta = DateTime.Now,
                 Activo = true
             };
@@ -98,7 +112,12 @@ namespace PortalNoticiasAPI.Controllers
             _context.Noticias.Add(noticia);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetNoticia), new { id = noticia.IdNoticia }, noticia);
+            var creada = await _context.Noticias
+                .Include(n => n.Usuario)
+                .Include(n => n.Categoria)
+                .FirstAsync(n => n.IdNoticia == noticia.IdNoticia);
+
+            return CreatedAtAction(nameof(GetNoticia), new { id = noticia.IdNoticia }, ToDto(creada));
         }
 
         [HttpPut("{id}")]
@@ -109,14 +128,21 @@ namespace PortalNoticiasAPI.Controllers
             if (noticia == null || !noticia.Activo)
                 return NotFound(new { mensaje = $"No se encontró la noticia con id {id}" });
 
-            var categoriaExiste = await _context.Categorias.AnyAsync(c => c.IdCategoria == dto.IdCategoria && c.Activo);
-            if (!categoriaExiste)
-                return BadRequest(new { mensaje = "La categoría especificada no existe o está inactiva" });
+            if (dto.IdCategoria.HasValue)
+            {
+                var categoriaExiste = await _context.Categorias.AnyAsync(c => c.IdCategoria == dto.IdCategoria && c.Activo);
+                if (!categoriaExiste)
+                    return BadRequest(new { mensaje = "La categoría especificada no existe o está inactiva" });
+            }
+
+            var audiencia = dto.Audiencia ?? new AudienciaDto();
 
             noticia.Titulo = dto.Titulo;
             noticia.Contenido = dto.Contenido;
             noticia.IdCategoria = dto.IdCategoria;
             noticia.FechaPublicacion = dto.FechaPublicacion;
+            noticia.Prioridad = string.IsNullOrWhiteSpace(audiencia.Prioridad) ? "normal" : audiencia.Prioridad;
+            noticia.AudienciaJson = JsonSerializer.Serialize(audiencia, JsonOpts);
 
             await _context.SaveChangesAsync();
 
