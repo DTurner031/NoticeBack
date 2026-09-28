@@ -110,7 +110,7 @@ namespace PortalNoticiasAPI.Controllers
 
             if (tieneArchivo)
             {
-                var carpetaUploads = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "uploads");
+                var carpetaUploads = Path.Combine(_env.ContentRootPath, "uploads");
                 Directory.CreateDirectory(carpetaUploads);
 
                 var nombreUnico = $"{Guid.NewGuid()}_{dto.Archivo!.FileName}";
@@ -174,7 +174,7 @@ namespace PortalNoticiasAPI.Controllers
 
             if (dto.Archivo != null && dto.Archivo.Length > 0)
             {
-                var carpetaUploads = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "uploads");
+                var carpetaUploads = Path.Combine(_env.ContentRootPath, "uploads");
                 Directory.CreateDirectory(carpetaUploads);
 
                 var nombreUnico = $"{Guid.NewGuid()}_{dto.Archivo.FileName}";
