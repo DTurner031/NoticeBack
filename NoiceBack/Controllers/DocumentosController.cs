@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
 using PortalNoticiasAPI.DTOs;
 using PortalNoticiasAPI.Models;
+using PortalNoticiasAPI.Services;
 
 namespace PortalNoticiasAPI.Controllers
 {
@@ -15,12 +16,17 @@ namespace PortalNoticiasAPI.Controllers
     {
         private readonly PortalNoticiasContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly NotificacionCorreoService _notificaciones;
         private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
 
-        public DocumentosController(PortalNoticiasContext context, IWebHostEnvironment env)
+        public DocumentosController(
+            PortalNoticiasContext context,
+            IWebHostEnvironment env,
+            NotificacionCorreoService notificaciones)
         {
             _context = context;
             _env = env;
+            _notificaciones = notificaciones;
         }
 
         // Identidad tomada del token (no del cuerpo de la petición, que el cliente podría falsear)
@@ -155,12 +161,16 @@ namespace PortalNoticiasAPI.Controllers
             _context.NoticiasDocumentos.Add(documento);
             await _context.SaveChangesAsync();
 
+            _notificaciones.NotificarPublicacion(
+                "Documento", documento.DocumentoNombre, documento.Descripcion,
+                $"/documentos/{documento.IdNoticiaDocumento}",
+                documento.AudienciaJson, documento.Prioridad, documento.IdUsuario);
+
             await _context.Entry(documento).Reference(d => d.Usuario).LoadAsync();
             return Ok(ToDto(documento));
         }
 
-        // PUT: api/documentos/5 (multipart/form-data; el archivo es opcional
-        // -- si no se manda uno nuevo, se conserva el que ya tenía)
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrador,Docente")]
         public async Task<IActionResult> ActualizarDocumento(int id, [FromForm] DocumentoUploadDto dto)

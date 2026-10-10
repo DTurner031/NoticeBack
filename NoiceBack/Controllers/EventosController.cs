@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
 using PortalNoticiasAPI.DTOs;
 using PortalNoticiasAPI.Models;
+using PortalNoticiasAPI.Services;
 
 namespace PortalNoticiasAPI.Controllers
 {
@@ -14,9 +15,14 @@ namespace PortalNoticiasAPI.Controllers
     public class EventosController : ControllerBase
     {
         private readonly PortalNoticiasContext _context;
+        private readonly NotificacionCorreoService _notificaciones;
         private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
 
-        public EventosController(PortalNoticiasContext context) => _context = context;
+        public EventosController(PortalNoticiasContext context, NotificacionCorreoService notificaciones)
+        {
+            _context = context;
+            _notificaciones = notificaciones;
+        }
 
         private int? GetUserId()
         {
@@ -122,6 +128,10 @@ namespace PortalNoticiasAPI.Controllers
 
             _context.Eventos.Add(evento);
             await _context.SaveChangesAsync();
+
+            _notificaciones.NotificarPublicacion(
+                "Evento", evento.Titulo, evento.Descripcion, $"/eventos/{evento.IdEvento}",
+                evento.AudienciaJson, evento.Prioridad, evento.IdUsuario);
 
             var creado = await _context.Eventos.Include(e => e.Usuario).FirstAsync(e => e.IdEvento == evento.IdEvento);
             return CreatedAtAction(nameof(GetEvento), new { id = evento.IdEvento }, ToDto(creado));

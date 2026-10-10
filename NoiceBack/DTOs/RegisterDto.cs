@@ -8,5 +8,7 @@ namespace PortalNoticiasAPI.DTOs
         public int NoIdentificacion { get; set; } // boleta
         public string Correo { get; set; } = string.Empty;
         public string Contrasena { get; set; } = string.Empty;
+        public string Carrera { get; set; } = string.Empty;
+        public int Semestre { get; set; } // 1 a 9
     }
 }

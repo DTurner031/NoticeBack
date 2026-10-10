@@ -14,10 +14,18 @@ namespace PortalNoticiasAPI.Models
         public DateTime FechaAlta { get; set; }
         public bool Activo { get; set; }
 
+        // Datos académicos (solo aplican a los alumnos; para el resto quedan en null)
+        public string? Carrera { get; set; }
+        public int? Semestre { get; set; } // 1 a 9
+
         // Relaciones
         public NombreRol? Rol { get; set; }
         public ICollection<Noticia>? Noticias { get; set; }
         public ICollection<Comentario>? Comentarios { get; set; }
         public ICollection<Evento>? Eventos { get; set; }
+
+        public string? TokenRecuperacionHash { get; set; }
+        public DateTime? TokenRecuperacionExpira { get; set; }
+        public bool NotificarPorCorreo { get; set; } = true;
     }
 }

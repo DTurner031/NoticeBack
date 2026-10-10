@@ -93,6 +93,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<NotificacionCorreoService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

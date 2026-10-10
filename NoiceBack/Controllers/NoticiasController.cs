@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PortalNoticiasAPI.Data;
 using PortalNoticiasAPI.DTOs;
 using PortalNoticiasAPI.Models;
+using PortalNoticiasAPI.Services;
 
 namespace PortalNoticiasAPI.Controllers
 {
@@ -13,11 +14,13 @@ namespace PortalNoticiasAPI.Controllers
     public class NoticiasController : ControllerBase
     {
         private readonly PortalNoticiasContext _context;
+        private readonly NotificacionCorreoService _notificaciones;
         private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
 
-        public NoticiasController(PortalNoticiasContext context)
+        public NoticiasController(PortalNoticiasContext context, NotificacionCorreoService notificaciones)
         {
             _context = context;
+            _notificaciones = notificaciones;
         }
 
         // Convierte la entidad (con AudienciaJson como texto) al DTO que consume el frontend
@@ -111,6 +114,10 @@ namespace PortalNoticiasAPI.Controllers
 
             _context.Noticias.Add(noticia);
             await _context.SaveChangesAsync();
+
+            _notificaciones.NotificarPublicacion(
+                "Noticia", noticia.Titulo, noticia.Contenido, $"/noticias/{noticia.IdNoticia}",
+                noticia.AudienciaJson, noticia.Prioridad, noticia.IdUsuario);
 
             var creada = await _context.Noticias
                 .Include(n => n.Usuario)
